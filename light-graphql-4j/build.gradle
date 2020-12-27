@@ -1,0 +1,86 @@
+plugins {
+//    id 'nu.studer.rocker' version '3.0.2'
+    id 'com.fizzed.rocker' version '1.3.0'
+    id 'java'
+}
+
+group 'com.networknt'
+version '2.0.22'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation project(':codegen-core')
+    implementation 'com.networknt:utility:2.0.22'
+    implementation 'com.networknt:config:2.0.22'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'com.fizzed:rocker-runtime:1.3.0'
+    implementation 'com.fizzed:rocker-compiler:1.3.0'
+    implementation 'com.graphql-java:graphql-java:13.0'
+    implementation group: 'com.jsoniter', name: 'jsoniter', version: '0.9.15'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.3'
+    testImplementation 'junit:junit:4.13.1'
+}
+
+configurations {
+    jar.archiveName = project.name + '.jar'
+}
+
+java {
+    withJavadocJar()
+}
+
+//rocker {
+//    configurations{
+//        main {
+//            classDir = file('build/resources/main')
+//            templateDir = file('src/main/resources')
+//            outputDir = file('build/generated-sources/rocker')
+//            optimize = false  // optional
+//            extendsClass = 'com.fizzed.rocker.runtime.DefaultRockerTemplate'
+//            targetCharset = 'UTF-8'
+//            javaVersion = '1.8'
+//            extendsModelClass = 'com.fizzed.rocker.runtime.DefaultRockerModel'
+//        }
+//    }
+//}
+
+sourceSets {
+    main {
+        rocker {
+            srcDir('src/main/resources')
+        }
+    }
+}
+
+rocker {
+    // (All settings are shown with their defaults)
+    //
+    // Skips building templates all together
+    skip false
+    // Base directory for generated java sources, actual target is sub directory
+    // with the name of the source set. The value is passed through project.file().
+    outputBaseDirectory = "$buildDir/generated-src/rocker"
+    // Base directory for the directory where the hot reload feature
+    // will (re)compile classes to at runtime (and where `rocker-compiler.conf`
+    // is generated, which is used by RockerRuntime.getInstance().setReloading(true)).
+    // The actual target is a sub directory with the name of the source set.
+    // The value is passed through project.file().
+    classBaseDirectory = "$buildDir/classes"
+    failOnError true
+    skipTouch true
+    // must not be empty when skipTouch is equal to false
+    touchFile ""
+    javaVersion '1.8'
+    extendsClass null
+    extendsModelClass null
+    optimize null
+    discardLogicWhitespace null
+    targetCharset null
+    suffixRegex null
+    postProcessing null
+    markAsGenerated null
+}

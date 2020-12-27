@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+    id 'base'
+}
+
+allprojects {
+    group = 'com.networknt'
+    version = '2.0.22'
+    repositories {
+        mavenLocal() // mavenLocal must be added first.
+        jcenter()
+    }
+}
+
+dependencies {
+    dependencies {
+        // Make the root project archives configuration depend on every sub-project
+        subprojects.forEach {
+            archives(it)
+        }
+    }
+}

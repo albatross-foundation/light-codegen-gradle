@@ -1,0 +1,54 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'java'
+}
+
+group 'com.networknt'
+version '2.0.22'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':codegen-core')
+    implementation project(':codegen-fwk')
+    implementation project(':light-rest-4j-generator')
+    implementation project(':light-hybrid-4j-generator')
+    implementation project(':light-graphql-4j-generator')
+    implementation 'com.networknt:client:2.0.22'
+    implementation 'com.networknt:metrics:2.0.22'
+    implementation 'com.networknt:cors:2.0.22'
+    implementation 'com.networknt:traceability:2.0.22'
+    implementation 'com.networknt:correlation:2.0.22'
+    implementation 'com.networknt:rpc-router:2.0.22'
+    implementation 'com.networknt:security:2.0.22'
+    implementation 'com.networknt:resource:2.0.22'
+    implementation 'com.networknt:health:2.0.22'
+    implementation 'com.networknt:info:2.0.22'
+    implementation 'com.networknt:json-schema-validator:1.0.29'
+    implementation 'com.jsoniter:jsoniter:0.9.15'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'com.fizzed:rocker-runtime:1.2.1'
+    implementation 'com.beust:jcommander:1.72'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    testImplementation 'junit:junit:4.13.1'
+}
+
+java {
+    withJavadocJar()
+}
+
+configurations {
+    jar.archiveName = project.name + '.jar'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.networknt.server.Server'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    archivesBaseName = project.name
+}

@@ -1,0 +1,92 @@
+@import com.jsoniter.any.Any
+@import java.util.Map
+@import java.util.List
+@option discardLogicWhitespace=true
+
+@args (String modelPackage, String className, String parentClassName, String classVarName, boolean isAbstractClass, List<Map<String, Any>> props, List<Map<String, Any>> parentProps)
+package @modelPackage;
+
+import java.util.Arrays;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public@if(isAbstractClass){ abstract} class @className @if(parentClassName != null) {extends @parentClassName} {
+
+    @for (prop: props) {
+    @if(prop.get("isEnum").toBoolean()) {@templates.rest.enumInline.template(prop)} else {private @prop.get("type") @prop.get("name");}
+    }
+
+    public @className () {
+    }
+
+    @for (prop: props) {
+    @if(prop.get("isEnum").toBoolean()) {
+    @@JsonProperty("@prop.get("jsonProperty")")
+    public @prop.get("nameWithEnum") @prop.get("getter")() {
+        return @prop.get("name");
+    }
+
+    public void @prop.get("setter")(@prop.get("nameWithEnum") @prop.get("name")) {
+        this.@prop.get("name") = @prop.get("name");
+    }
+
+    } else {
+    @@JsonProperty("@prop.get("jsonProperty")")
+    public @prop.get("type") @prop.get("getter")() {
+        return @prop.get("name");
+    }
+
+    public void @prop.get("setter")(@prop.get("type") @prop.get("name")) {
+        this.@prop.get("name") = @prop.get("name");
+    }
+
+    }
+    }
+    @if(props.size() > 0) {
+    @@Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        @className @classVarName = (@className) o;
+
+        return @for ((i, prop): props) {@if (i.index() <  props.size() - 1) {@prop.get("comparator")?:"Objects".equals(@prop.get("name"), @classVarName.@prop.get("name")) &&
+               } else {@prop.get("comparator")?:"Objects".equals(@prop.get("name"), @classVarName.@prop.get("name"))}}@if(parentProps != null && parentProps.size() > 0){ &&
+               @for ((i, prop): parentProps) {@if (i.index() <  parentProps.size() - 1) {@prop.get("comparator")?:"Objects".equals(this.@prop.get("getter")(), @classVarName.@prop.get("getter")()) &&
+               } else {@prop.get("comparator")?:"Objects".equals(this.@prop.get("getter")(), @classVarName.@prop.get("getter")())}}};
+    }
+
+    @@Override
+    public int hashCode() {
+        return Objects.hash(@for((i, prop): props) {@with(String hasher = prop.get("hasher"), String NULL = null){@if (i.index() <  props.size() - 1) {@if (hasher == null){@prop.get("name")} else {@hasher@NULL?:"".hashCode(@prop.get("name"))}, } else {@if (hasher == null){@prop.get("name")} else {@hasher@NULL?:"".hashCode(@prop.get("name"))}}}}@if(parentProps != null && parentProps.size() > 0){, @for((i, prop): parentProps) {@with(String hasher = prop.get("hasher"), String NULL = null){@if (i.index() <  parentProps.size() - 1) {@if (hasher == null){this.@prop.get("getter")()} else {@hasher@NULL?:"".hashCode(this.@prop.get("getter")())}, } else {@if (hasher == null){this.@prop.get("getter")()} else {@hasher@NULL?:"".hashCode(this.@prop.get("getter")())}}}}});
+    }
+
+    }
+    @@Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class @className {\n");
+        @for(prop: props) {
+        sb.append("    @prop.get("name"): ").append(toIndentedString(@prop.get("name"))).append("\n");}@if(parentProps != null && parentProps.size() > 0){@for(prop: parentProps) {
+        sb.append("    @prop.get("name"): ").append(toIndentedString(this.@prop.get("getter")())).append("\n");}}
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+}

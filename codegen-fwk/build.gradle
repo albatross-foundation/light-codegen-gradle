@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group 'com.networknt'
+version '2.0.22'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    jar.archiveName = project.name + '.jar'
+}
+
+dependencies {
+    implementation project(':codegen-core')
+    implementation 'com.networknt:service:2.0.22'
+    implementation project(':light-rest-4j-generator')
+    implementation project(':light-hybrid-4j-generator')
+    implementation project(':light-graphql-4j-generator')
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'com.fizzed:rocker-runtime:1.3.0'
+    implementation 'com.beust:jcommander:1.72'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.3'
+    testImplementation 'junit:junit:4.13.1'
+}
+
+java {
+    withJavadocJar()
+}

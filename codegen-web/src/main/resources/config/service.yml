@@ -1,0 +1,23 @@
+# Singleton service factory configuration/IoC injection
+singletons:
+# HandlerProvider implementation
+- com.networknt.handler.HandlerProvider:
+  - com.networknt.rpc.router.RpcRouter
+# StartupHookProvider implementations
+- com.networknt.server.StartupHookProvider:
+  # registry all service handlers by from annotations
+  - com.networknt.rpc.router.RpcStartupHookProvider
+# ShutdownHookProvider implementations
+# - com.networknt.server.ShutdownHookProvider:
+  # - com.networknt.server.Test1ShutdownHook
+  # - com.networknt.server.Test2ShutdownHook
+
+# Generator interface implementations
+- com.networknt.codegen.Generator:
+  - com.networknt.codegen.rest.OpenApiGenerator
+  - com.networknt.codegen.hybrid.HybridServerGenerator
+  - com.networknt.codegen.hybrid.HybridServiceGenerator
+  - com.networknt.codegen.graphql.GraphqlGenerator
+  - com.networknt.codegen.rest.OpenApiKotlinGenerator
+- com.networknt.resources.PathResourceProvider:
+  - com.networknt.codegen.handler.CodegenResourceProvider

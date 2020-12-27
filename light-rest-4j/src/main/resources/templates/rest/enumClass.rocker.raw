@@ -1,0 +1,8 @@
+@args (String modelPackage, String className, String enums)
+package @modelPackage;
+import java.util.Enumeration;
+
+public enum @className {
+    @enums;
+
+}
