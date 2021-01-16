@@ -58,6 +58,7 @@ public class CodegenMultipleHandler implements Handler {
         // generate a destination folder name.
         String output = HashUtil.generateUUID();
         String zipFile = output + ".zip";
+        String buildTool = null;
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 
         List<Map<String, Object>> generators = (List<Map<String, Object>>)((Map<String, Object>)input).get("generators");
@@ -123,7 +124,7 @@ public class CodegenMultipleHandler implements Handler {
                 }
 
                 Generator generator = FrameworkRegistry.getInstance().getGenerator(framework);
-                generator.generate(projectFolder, model, Any.wrap(config));
+                generator.generate(projectFolder, buildTool, model, Any.wrap(config));
             }
         } catch (Exception e) {
             logger.error("Exception:", e);

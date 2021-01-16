@@ -36,11 +36,12 @@ public interface Generator {
      * Generate the project based on the input parameters.
      *
      * @param targetPath The output directory of the generated project
+     * @param buildTool The build tool is Maven or Gradle
      * @param model The optional model data that trigger the generation, i.e. swagger specification, graphql IDL etc.
      * @param config A json object that controls how the generator behaves.
      * @throws IOException throws IOException
      */
-    void generate(String targetPath, Object model, Any config) throws IOException;
+    void generate(String targetPath, String buildTool, Object model, Any config) throws IOException;
 
     /**
      * Get generator name

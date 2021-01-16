@@ -84,7 +84,7 @@ public class OpenApiLambdaGenerator implements Generator {
      * @throws IOException IO Exception occurs during code generation
      */
     @Override
-    public void generate(final String targetPath, Object model, Any config) throws IOException {
+    public void generate(final String targetPath, final String buildTool, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
         String projectName = config.toString("projectName").trim();
 

@@ -57,6 +57,7 @@ public class CodegenSingleHandler implements Handler {
         // generate a destination folder name.
         String output = HashUtil.generateUUID();
         String zipFile = output + ".zip";
+        String buildTool = null;
         String projectFolder = codegenWebConfig.getTmpFolder() + separator + output;
 
         Map<String, Object> generatorMap = (Map<String, Object>)input;
@@ -120,7 +121,7 @@ public class CodegenSingleHandler implements Handler {
             }
 
             Generator generator = FrameworkRegistry.getInstance().getGenerator(framework);
-            generator.generate(projectFolder, model, Any.wrap(config));
+            generator.generate(projectFolder, buildTool, model, Any.wrap(config));
 
         } catch (Exception e) {
             logger.error("Exception:", e);

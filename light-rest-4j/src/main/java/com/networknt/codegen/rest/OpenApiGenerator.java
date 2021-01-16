@@ -82,7 +82,7 @@ public class OpenApiGenerator implements Generator {
      * @throws IOException IO Exception occurs during code generation
      */
     @Override
-    public void generate(final String targetPath, Object model, Any config) throws IOException {
+    public void generate(final String targetPath, final String buildTool, Object model, Any config) throws IOException {
         // whoever is calling this needs to make sure that model is converted to Map<String, Object>
         String rootPackage = config.toString("rootPackage").trim();
         final String modelPackage = config.toString("modelPackage").trim();
@@ -129,13 +129,6 @@ public class OpenApiGenerator implements Generator {
         if (!generateModelOnly) {
             // if set to true, regenerate the code only (handlers, model and the handler.yml, potentially affected by operation changes
             if (!specChangeCodeReGenOnly) {
-                // generate configurations, project, masks, certs, etc
-                if (!skipPomFile) {
-                    transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
-                }
-
-
-                transferMaven(targetPath);
                 // There is only one port that should be exposed in Dockerfile, otherwise, the service
                 // discovery will be so confused. If https is enabled, expose the https port. Otherwise http port.
                 String expose = "";
@@ -145,9 +138,23 @@ public class OpenApiGenerator implements Generator {
                     expose = httpPort;
                 }
 
-                transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfile.template(config, expose));
-                transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslim.template(config, expose));
-                transfer(targetPath, "", "build.sh", templates.rest.buildSh.template(dockerOrganization, serviceId));
+                if ("maven".equals(buildTool.toLowerCase().trim())) {
+                    if (!skipPomFile) {
+                        transfer(targetPath, "", "pom.xml", templates.rest.openapi.pom.template(config));
+                    }
+                    transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfileMaven.template(config, expose));
+                    transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslimMaven.template(config, expose));
+                    transfer(targetPath, "", "build.sh", templates.rest.buildMaven.template(dockerOrganization, serviceId));
+                    transferMaven(targetPath);
+                } else {
+                    transfer(targetPath, "", "build.gradle", templates.rest.openapi.build.template(config));
+                    transfer(targetPath, "", "settings.gradle", templates.rest.openapi.settings.template(config));
+                    transfer(targetPath, "docker", "Dockerfile", templates.rest.dockerfileGradle.template(config, expose));
+                    transfer(targetPath, "docker", "Dockerfile-Slim", templates.rest.dockerfileslimGradle.template(config, expose));
+                    transfer(targetPath, "", "build.sh", templates.rest.buildGradle.template(dockerOrganization, serviceId));
+                    transferGradle(targetPath);
+                }
+
                 transfer(targetPath, "", "kubernetes.yml", templates.rest.kubernetes.template(dockerOrganization, serviceId, config.get("artifactId").toString().trim(), expose, version));
                 transfer(targetPath, "", ".gitignore", templates.rest.gitignore.template());
                 transfer(targetPath, "", "README.md", templates.rest.README.template());
