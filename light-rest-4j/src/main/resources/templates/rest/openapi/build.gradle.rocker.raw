@@ -1,0 +1,95 @@
+@import com.jsoniter.any.Any
+@args (Any config)plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri('https://oss.sonatype.org/content/repositories/snapshots')
+    }
+
+    maven {
+        url = uri('https://repo1.maven.org/maven2')
+    }
+}
+
+ext {
+    javaMainClass = 'com.networknt.server.Server'
+}
+
+application {
+    mainClassName = javaMainClass
+}
+
+dependencies {
+    def light4jVersion = '2.0.22'
+    def jacksonVersion = '2.10.4'
+    def jsonSchemaValidatorVersion = '1.0.45'
+    def undertowVersion = '2.1.3.Final'
+    def logbackVersion = '1.2.3'
+    def junitVersion = '4.12'
+    implementation group: 'com.networknt', name: 'config', version: light4jVersion
+    implementation group: 'com.networknt', name: 'utility', version: light4jVersion
+    implementation group: 'com.networknt', name: 'security', version: light4jVersion
+    implementation group: 'com.networknt', name: 'client', version: light4jVersion
+    implementation group: 'com.networknt', name: 'audit', version: light4jVersion
+    implementation group: 'com.networknt', name: 'info', version: light4jVersion
+    implementation group: 'com.networknt', name: 'health', version: light4jVersion
+    implementation group: 'com.networknt', name: 'status', version: light4jVersion
+    implementation group: 'com.networknt', name: 'exception', version: light4jVersion
+    implementation group: 'com.networknt', name: 'body', version: light4jVersion
+    implementation group: 'com.networknt', name: 'dump', version: light4jVersion
+    implementation group: 'com.networknt', name: 'mask', version: light4jVersion
+    implementation group: 'com.networknt', name: 'metrics', version: light4jVersion
+    implementation group: 'com.networknt', name: 'handler', version: light4jVersion
+    implementation group: 'com.networknt', name: 'sanitizer', version: light4jVersion
+    implementation group: 'com.networknt', name: 'traceability', version: light4jVersion
+    implementation group: 'com.networknt', name: 'correlation', version: light4jVersion
+    implementation group: 'com.networknt', name: 'service', version: light4jVersion
+    implementation group: 'com.networknt', name: 'registry', version: light4jVersion
+    implementation group: 'com.networknt', name: 'balance', version: light4jVersion
+    implementation group: 'com.networknt', name: 'cluster', version: light4jVersion
+    implementation group: 'com.networknt', name: 'consul', version: light4jVersion
+    implementation group: 'com.networknt', name: 'decryptor', version: light4jVersion
+    implementation group: 'com.networknt', name: 'server', version: light4jVersion
+    implementation group: 'com.networknt', name: 'json-schema-validator', version: jsonSchemaValidatorVersion
+    implementation group: 'com.networknt', name: 'openapi-parser', version: light4jVersion
+    implementation group: 'com.networknt', name: 'openapi-meta', version: light4jVersion
+    implementation group: 'com.networknt', name: 'openapi-security', version: light4jVersion
+    implementation group: 'com.networknt', name: 'openapi-validator', version: light4jVersion
+    implementation group: 'com.networknt', name: 'specification', version: light4jVersion
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: jacksonVersion
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
+    implementation group: 'io.undertow', name: 'undertow-core', version: undertowVersion
+    testImplementation group: 'junit', name: 'junit', version: junitVersion
+}
+
+group = '@config.get("groupId")'
+version = '@config.get("version")'
+description = '@config.get("name")'
+sourceCompatibility = '1.8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task runWithExecJarExecutable(type: Exec) {
+    dependsOn jar
+    group = "Execution"
+    description = "Run the output executable jar with ExecTask"
+    commandLine "java", "-jar", jar.archiveFile.get()
+}
